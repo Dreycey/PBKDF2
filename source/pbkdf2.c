@@ -29,7 +29,6 @@ void hmac_isha(const uint8_t *key, size_t key_len,
    *     This puts the key into keypad
    *     depending on the key's length
    */
-
   memcpy(keypad,key,key_len);
   memset(keypad+key_len,0x00,ISHA_BLOCKLEN);
 

@@ -43,25 +43,8 @@ static void ISHAProcessMessageBlock(ISHAContext *ctx)
   /*
    * Optimization:
    * 1. Use one for loop in the place of 2 seperate for loops
-   * 2.
+   * 2. While loop unrolled completely
    */
-//  while(t < 16)
-//  {
-////    W[t] = ((uint32_t) ctx->MBlock[t + t + t + t]) << 24;
-////    W[t] |= ((uint32_t) ctx->MBlock[t + t + t + t + 1]) << 16;
-////    W[t] |= ((uint32_t) ctx->MBlock[t + t + t + t + 2]) << 8;
-////    W[t] |= ((uint32_t) ctx->MBlock[t + t + t + t + 3]);
-//
-////	W[t] = (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (t<<2)))));
-////    temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + W[t] ) & 0xFFFFFFFF;
-//    temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (t<<2))))) ) & 0xFFFFFFFF;
-//    E = D;
-//    D = C;
-//    C = ISHACircularShift(30,B);
-//    B = A;
-//    A = temp;
-//    t++;
-//  }
 
   //1-4
   temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (0<<2))))) ) & 0xFFFFFFFF;
@@ -238,7 +221,7 @@ static void ISHAPadMessage(ISHAContext *ctx)
 
 void ISHAReset(ISHAContext *ctx)
 {
-  ctx->byte_length = 0; //
+  ctx->byte_length = 0; // new Message length
   ctx->MB_Idx      = 0;
 
   ctx->MD[0]       = 0x67452301;
@@ -254,6 +237,7 @@ void ISHAReset(ISHAContext *ctx)
 
 void ISHAResult(ISHAContext *ctx, uint8_t *digest_out)
 {
+	// Corrupt was redundant
 //  if (ctx->Corrupted)
 //  {
 //    return;
