@@ -3,10 +3,12 @@
 ## Before optimization (-O0)
 	1. Running Time - over 8 seconds
 	2. Code size - 21056
+	3. Passes Tests - Yes
 	
 ## After optimization (-O0)
 	1. Running Time - 2618 msec
 	2. Code Size - 21920 bytes (using objdump on .text segment within Debug/PBKDF2.axf)
+	3. Passes Tests - Yes
 	
 ## How code changed
 
