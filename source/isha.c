@@ -28,10 +28,11 @@
  */
 static void ISHAProcessMessageBlock(ISHAContext *ctx)
 {
-  uint32_t temp; 
-  int t;
-  uint32_t W[16];
-  uint32_t A, B, C, D, E;
+  uint32_t temp;
+//  register int t = 0;
+//  uint32_t W[16];
+  register uint32_t A;
+  uint32_t B, C, D, E;
 
   A = ctx->MD[0];
   B = ctx->MD[1];
@@ -39,31 +40,141 @@ static void ISHAProcessMessageBlock(ISHAContext *ctx)
   D = ctx->MD[3];
   E = ctx->MD[4];
 
-  for(t = 0; t < 16; t++)
-  {
-    W[t] = ((uint32_t) ctx->MBlock[t * 4]) << 24;
-    W[t] |= ((uint32_t) ctx->MBlock[t * 4 + 1]) << 16;
-    W[t] |= ((uint32_t) ctx->MBlock[t * 4 + 2]) << 8;
-    W[t] |= ((uint32_t) ctx->MBlock[t * 4 + 3]);
-  }
+  /*
+   * Optimization:
+   * 1. Use one for loop in the place of 2 seperate for loops
+   * 2.
+   */
+//  while(t < 16)
+//  {
+////    W[t] = ((uint32_t) ctx->MBlock[t + t + t + t]) << 24;
+////    W[t] |= ((uint32_t) ctx->MBlock[t + t + t + t + 1]) << 16;
+////    W[t] |= ((uint32_t) ctx->MBlock[t + t + t + t + 2]) << 8;
+////    W[t] |= ((uint32_t) ctx->MBlock[t + t + t + t + 3]);
+//
+////	W[t] = (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (t<<2)))));
+////    temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + W[t] ) & 0xFFFFFFFF;
+//    temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (t<<2))))) ) & 0xFFFFFFFF;
+//    E = D;
+//    D = C;
+//    C = ISHACircularShift(30,B);
+//    B = A;
+//    A = temp;
+//    t++;
+//  }
 
-  for(t = 0; t < 16; t++)
-  {
-    temp = ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + W[t];
-    temp &= 0xFFFFFFFF;
-    E = D;
-    D = C;
-    C = ISHACircularShift(30,B);
-    B = A;
-    A = temp;
-  }
+  //1-4
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (0<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (1<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (2<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (3<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+
+
+  //4-8
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (4<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (5<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (6<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (7<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+
+
+  //8-12
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (8<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (9<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (10<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (11<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+
+
+  //12-16
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (12<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (13<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (14<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
+  temp = (ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + (__builtin_bswap32(*((uint32_t *)(ctx->MBlock + (15<<2))))) ) & 0xFFFFFFFF;
+  E = D;
+  D = C;
+  C = ISHACircularShift(30,B);
+  B = A;
+  A = temp;
 
   ctx->MD[0] = (ctx->MD[0] + A) & 0xFFFFFFFF;
   ctx->MD[1] = (ctx->MD[1] + B) & 0xFFFFFFFF;
   ctx->MD[2] = (ctx->MD[2] + C) & 0xFFFFFFFF;
   ctx->MD[3] = (ctx->MD[3] + D) & 0xFFFFFFFF;
   ctx->MD[4] = (ctx->MD[4] + E) & 0xFFFFFFFF;
-
   ctx->MB_Idx = 0;
 }
 
@@ -90,39 +201,36 @@ static void ISHAPadMessage(ISHAContext *ctx)
    */
   if (ctx->MB_Idx > 55)
   {
-    ctx->MBlock[ctx->MB_Idx++] = 0x80;
-    while(ctx->MB_Idx < 64)
-    {
-      ctx->MBlock[ctx->MB_Idx++] = 0;
-    }
+	ctx->MBlock[ctx->MB_Idx++] = 0x80;
 
+    memset(ctx->MBlock + ctx->MB_Idx, 0, ISHA_BLOCKLEN - ctx->MB_Idx);
     ISHAProcessMessageBlock(ctx);
-
-    while(ctx->MB_Idx < 56)
-    {
-      ctx->MBlock[ctx->MB_Idx++] = 0;
-    }
+    memset(ctx->MBlock, 0, ISHA_BLOCKLEN - 6);
   }
   else
   {
-    ctx->MBlock[ctx->MB_Idx++] = 0x80;
-    while(ctx->MB_Idx < 56)
-    {
-      ctx->MBlock[ctx->MB_Idx++] = 0;
-    }
+	ctx->MBlock[ctx->MB_Idx++] = 0x80;
+	memset(ctx->MBlock + ctx->MB_Idx,0, 59 - ctx->MB_Idx); // 59, so padding later
   }
 
   /*
-   *  Store the message length as the last 8 octets
+   *  Optimization:
+   *  1. Store the message length as last 5 bytes
+   *     Note: everything shifted over by 2 bits, so
+   *           using 29, 21, etc since it accounts
+   *           for the 2 bit shift when converting from
+   *           bytes to bits:
+   *
+   *           1 -> 100
+   *           10 -> 1000
+   *           100 -> 10000
+   *  Big endian
    */
-  ctx->MBlock[56] = (ctx->Length_High >> 24) & 0xFF;
-  ctx->MBlock[57] = (ctx->Length_High >> 16) & 0xFF;
-  ctx->MBlock[58] = (ctx->Length_High >> 8) & 0xFF;
-  ctx->MBlock[59] = (ctx->Length_High) & 0xFF;
-  ctx->MBlock[60] = (ctx->Length_Low >> 24) & 0xFF;
-  ctx->MBlock[61] = (ctx->Length_Low >> 16) & 0xFF;
-  ctx->MBlock[62] = (ctx->Length_Low >> 8) & 0xFF;
-  ctx->MBlock[63] = (ctx->Length_Low) & 0xFF;
+  ctx->MBlock[59] = (ctx->byte_length >> 29) & 0xFF;
+  ctx->MBlock[60] = (ctx->byte_length >> 21) & 0xFF;
+  ctx->MBlock[61] = (ctx->byte_length >> 13) & 0xFF;
+  ctx->MBlock[62] = (ctx->byte_length >> 5) & 0xFF;
+  ctx->MBlock[63] = (ctx->byte_length << 3) & 0xFF;
 
   ISHAProcessMessageBlock(ctx);
 }
@@ -130,8 +238,7 @@ static void ISHAPadMessage(ISHAContext *ctx)
 
 void ISHAReset(ISHAContext *ctx)
 {
-  ctx->Length_Low  = 0;
-  ctx->Length_High = 0;
+  ctx->byte_length = 0; //
   ctx->MB_Idx      = 0;
 
   ctx->MD[0]       = 0x67452301;
@@ -147,10 +254,10 @@ void ISHAReset(ISHAContext *ctx)
 
 void ISHAResult(ISHAContext *ctx, uint8_t *digest_out)
 {
-  if (ctx->Corrupted)
-  {
-    return;
-  }
+//  if (ctx->Corrupted)
+//  {
+//    return;
+//  }
 
   if (!ctx->Computed)
   {
@@ -158,12 +265,16 @@ void ISHAResult(ISHAContext *ctx, uint8_t *digest_out)
     ctx->Computed = 1;
   }
 
-  for (int i=0; i<20; i+=4) {
-    digest_out[i]   = (ctx->MD[i/4] & 0xff000000) >> 24;
-    digest_out[i+1] = (ctx->MD[i/4] & 0x00ff0000) >> 16;
-    digest_out[i+2] = (ctx->MD[i/4] & 0x0000ff00) >> 8;
-    digest_out[i+3] = (ctx->MD[i/4] & 0x000000ff);
-  }
+  /*
+   * Optimization:
+   * 1. Using bswap32 to perform endianess
+   * 2. unroll the loop
+   */
+  *((uint32_t *)(digest_out)) = __builtin_bswap32(ctx->MD[0]);
+  *((uint32_t *)(digest_out + 4)) = __builtin_bswap32(ctx->MD[1]);
+  *((uint32_t *)(digest_out + 8)) = __builtin_bswap32(ctx->MD[2]);
+  *((uint32_t *)(digest_out + 12)) = __builtin_bswap32(ctx->MD[3]);
+  *((uint32_t *)(digest_out + 16)) = __builtin_bswap32(ctx->MD[4]);
 
   return;
 }
@@ -171,43 +282,44 @@ void ISHAResult(ISHAContext *ctx, uint8_t *digest_out)
 
 void ISHAInput(ISHAContext *ctx, const uint8_t *message_array, size_t length)
 {
-  if (!length)
-  {
-    return;
-  }
+	  int length_to_store = 0;
+	  if (!length)
+	  {
+	    return;
+	  }
 
-  if (ctx->Computed || ctx->Corrupted)
-  {
-    ctx->Corrupted = 1;
-    return;
-  }
+	  ctx->byte_length += length;
 
-  while(length-- && !ctx->Corrupted)
-  {
-    ctx->MBlock[ctx->MB_Idx++] = (*message_array & 0xFF);
+	  while(length)
+	  {
+		/*
+		 * i.e. if message to big for capacity
+		 *          - store as much as possible
+		 *      else
+		 *          - store entire message
+		 */
+	    length_to_store = length;
+		if ( (ISHA_BLOCKLEN - ctx->MB_Idx) < length) {
+			length_to_store = ISHA_BLOCKLEN - ctx->MB_Idx;
+		}
 
-    ctx->Length_Low += 8;
-    /* Force it to 32 bits */
-    ctx->Length_Low &= 0xFFFFFFFF;
-    if (ctx->Length_Low == 0)
-    {
-      ctx->Length_High++;
-      /* Force it to 32 bits */
-      ctx->Length_High &= 0xFFFFFFFF;
-      if (ctx->Length_High == 0)
-      {
-        /* Message is too long */
-        ctx->Corrupted = 1;
-      }
-    }
+		/*
+		 * Store message using memcpy at location ctx->MBlock[ctx->MB_Idx]
+		 */
+		memcpy(ctx->MBlock + ctx->MB_Idx, message_array, length_to_store);
 
-    if (ctx->MB_Idx == 64)
-    {
-      ISHAProcessMessageBlock(ctx);
-    }
+		// updates
+		length -= length_to_store; // update the length needed to store still
+		ctx->MB_Idx += length_to_store; // update index by len stored
+		message_array += length_to_store; // update ptr to msg
 
-    message_array++;
-  }
+		// process maxed out message block
+	    if (ctx->MB_Idx == ISHA_BLOCKLEN)
+	    {
+	      ISHAProcessMessageBlock(ctx);
+	    }
+	  }
+
 }
 
 

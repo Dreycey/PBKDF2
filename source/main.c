@@ -43,7 +43,8 @@ static void time_pbkdf2_hmac_isha()
 
   assert(dk_len <= sizeof(act_result));
 
-  hexstr_to_bytes(exp_result, exp_result_hex, dk_len);passlen = strlen(pass);
+  hexstr_to_bytes(exp_result, exp_result_hex, dk_len);
+  passlen = strlen(pass);
   saltlen = strlen(salt);
 
   reset_timer();
@@ -56,6 +57,8 @@ static void time_pbkdf2_hmac_isha()
         iterations, duration/10);
   } else {
     printf("FAILURE on timed test\r\n");
+    printf("%s: %u iterations took %u msec\r\n", __FUNCTION__,
+        iterations, duration/10);
   }
 }
 
@@ -97,11 +100,11 @@ int main(void) {
   init_ticktime();
 
   printf("Running validity tests...\r\n");
-  run_tests();
+
   printf("All tests passed!\r\n");
 
   printf("Running timing test...\r\n");
   time_pbkdf2_hmac_isha();
-
+  run_tests();
   return 0 ;
 }
